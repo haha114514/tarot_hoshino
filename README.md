@@ -1,5 +1,5 @@
 # tarot_hoshinot
-hoshinobot 塔罗牌插件
+hoshinobot 塔罗牌插件，灵感来自于repo https://github.com/loli-fish/destiny_tarrot-CQnonebot
 
 # 用法
 
