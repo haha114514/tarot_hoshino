@@ -1,6 +1,5 @@
 from random import shuffle, randint
 import random
-from nonebot import *
 from hoshino import util, R
 from hoshino import Service
 
