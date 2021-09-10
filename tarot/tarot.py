@@ -3,10 +3,6 @@ import random
 from nonebot import *
 from hoshino import util, R
 from hoshino import Service
-from hoshino.util.score import Score
-from hoshino.util.database import (DataBaseException, NotEnoughScoreError,
-                                   ScoreLimitExceededError, database,
-                                   score_data, score_log, init)
 
 cards = {
     "圣杯1": "家庭生活之幸福，别的牌可给予其更多内涵，如宾客来访、宴席、吵架",
@@ -187,16 +183,13 @@ async def spend_gold(bot, ev):
 		await bot.finish(ev, f'花费积分失败(Error:{e})，请联系维护组')
 
 @sv.on_prefix(('塔罗牌'))
-
 async def send_playerInfo(bot, ev):
-    await spend_gold(bot, ev)
     await bot.send(ev,'请稍等，正在洗牌中')  
     indices =random.sample(range(1,78), 4)
     card_keys = list(cards.keys())
     shuffle(card_keys)
-   #count = 1
     for count in range(4):
-        print(count)
+	sv.logger.info(f'第{count}轮')	
         index = int(indices[count])
         card_key = card_keys[index-1]
         meaning_key = list(meanings.keys())[count]
@@ -226,8 +219,7 @@ async def send_playerInfo(bot, ev):
 
         msg = Message(f'''{meaning_key}，{meaning_value}
 {card_key}，{card_value}\n''').append(image)
-        print(msg)
-
+        sv.logger.info(msg)
         if count < 3:
             await bot.send(ev,msg, at_sender=True)
         else:
