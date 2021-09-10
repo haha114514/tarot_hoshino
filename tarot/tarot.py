@@ -158,28 +158,9 @@ meanings = {
 }
 
 
-sv = Service('tarot', visible= False, enable_on_default= True, bundle='塔罗牌', help_='''
+sv = Service('tarot', visible= True, enable_on_default= True, bundle='塔罗牌', help_='''
 塔罗牌
 '''.strip())
-
-async def spend_gold(bot, ev):
-
-	gold = Score(ev) 
-    # 首先实例化类,可以传入CQEvent和CommandSession,对于定时任务,直接传入uid即可
-	try:
-		now_gold = gold.spend_score('1') # 花费积分,其他方法见源码
-		await bot.send(ev, f'你花掉了1 积分，你现在有{now_gold} 积分')
-	except NotEnoughScoreError as e: 
-        # 积分不够花
-        # 判断积分是否够用还可以使用`check_score`方法,这样就不用处理异常
-		await bot.finish(
-            ev, f'你只有{e.args[1]} 积分，不够用于消费')
-        # 从异常信息中获取参数(args1:现有积分数,args2:需要花掉的积分数)
-	except ScoreLimitExceededError as e: 
-        # 积分花太多(没有启用花费上限可以不用处理)
-		await bot.finish(ev, f'你今天已经花了{e.args[0]} 积分了，请明天再来吧')
-	except DataBaseException as e: # 数据库操作失败
-		await bot.finish(ev, f'花费积分失败(Error:{e})，请联系维护组')
 
 @sv.on_prefix(('塔罗牌'))
 async def send_playerInfo(bot, ev):
