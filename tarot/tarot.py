@@ -170,7 +170,7 @@ async def send_playerInfo(bot, ev):
     card_keys = list(cards.keys())
     shuffle(card_keys)
     for count in range(4):
-	sv.logger.info(f'第{count}轮')	
+        sv.logger.info(f'第{count}轮')	
         index = int(indices[count])
         card_key = card_keys[index-1]
         meaning_key = list(meanings.keys())[count]
