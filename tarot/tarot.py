@@ -157,7 +157,7 @@ meanings = {
     "切牌": "表示问卜者的主观想法"
 }
 
-path ='/root/HoshinoBot/hoshino/modules/tarot/assets/' #请修改为自己的assets path
+path ='/root/HoshinoBot/hoshino/modules/tarot/assets/' #请修改为自己的assets path，注意windows斜杠转义
 
 sv = Service('tarot', visible= True, enable_on_default= True, bundle='塔罗牌', help_='''
 塔罗牌
@@ -170,7 +170,7 @@ async def send_playerInfo(bot, ev):
     card_keys = list(cards.keys())
     shuffle(card_keys)
     for count in range(4):
-	sv.logger.info(f'第{count}轮')	
+        sv.logger.info(f'第{count}轮')	
         index = int(indices[count])
         card_key = card_keys[index-1]
         meaning_key = list(meanings.keys())[count]
@@ -194,14 +194,11 @@ async def send_playerInfo(bot, ev):
         else:
             card_value = cards[card_key]
 
-        image = MessageSegment(type_="image", data={
-            "file": image_file
-        })
-
-        msg = Message(f'''{meaning_key}，{meaning_value}
-{card_key}，{card_value}\n''').append(image)
+        msg = []
+        msg.extend([meaning_key,"，",meaning_value,"\n",card_key,"，",card_value,"\n",f"[CQ:image,file={image_file}]"])
+	
         sv.logger.info(msg)
         if count < 3:
-            await bot.send(ev,msg, at_sender=True)
+            await bot.send(ev, "".join(msg), at_sender=True)
         else:
-            await bot.finish(ev,msg, at_sender=True)
+            await bot.finish(ev, "".join(msg), at_sender=True)
