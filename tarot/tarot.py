@@ -1,7 +1,13 @@
 from random import shuffle, randint
 import random
+
+from aiocqhttp.message import Message
 from hoshino import util, R
 from hoshino import Service
+from hoshino.config import NICKNAME
+
+if type(NICKNAME)!=list:
+    NICKNAME=[NICKNAME]
 
 cards = {
     "圣杯1": "家庭生活之幸福，别的牌可给予其更多内涵，如宾客来访、宴席、吵架",
@@ -158,17 +164,20 @@ meanings = {
 }
 
 path ='/root/HoshinoBot/hoshino/modules/tarot/assets/' #请修改为自己的assets path，注意windows斜杠转义
+# path ='C:\\Users\\Administrator\\HoshinoBot\\hoshino\\modules\\tarot\\assets\\' windows路径格式参考
+CHAIN_REPLY = True #是否启用转发模式
 
 sv = Service('tarot', visible= True, enable_on_default= True, bundle='塔罗牌', help_='''
 塔罗牌
 '''.strip())
 
-@sv.on_prefix(('塔罗牌'))
+@sv.on_fullmatch(('塔罗牌'))
 async def send_playerInfo(bot, ev):
     await bot.send(ev,'请稍等，正在洗牌中')  
     indices =random.sample(range(1,78), 4)
     card_keys = list(cards.keys())
     shuffle(card_keys)
+    chain = []
     for count in range(4):
         sv.logger.info(f'第{count}轮')	
         index = int(indices[count])
@@ -194,10 +203,35 @@ async def send_playerInfo(bot, ev):
         else:
             card_value = cards[card_key]
 
-        msg = []
-        msg.extend([meaning_key,"，",meaning_value,"\n",card_key,"，",card_value,"\n",f"[CQ:image,file={image_file}]"])
-        sv.logger.info(msg)
-        if count < 3:
-            await bot.send(ev, "".join(msg), at_sender=True)
+        if not CHAIN_REPLY:           
+            msg = []
+            msg.extend([meaning_key,"，",meaning_value,"\n",card_key,"，",card_value,"\n",f"[CQ:image,file={image_file}]"])
+            sv.logger.info(msg)
+            if count < 3:
+                await bot.send(ev, "".join(msg), at_sender=True)
+            else:
+                await bot.finish(ev, "".join(msg), at_sender=True)
         else:
-            await bot.finish(ev, "".join(msg), at_sender=True)
+            msg = []
+            msg.extend([meaning_key,"，",meaning_value,"\n",card_key,"，",card_value,"\n"])
+            if count < 4:
+                await chain_reply(ev, chain, msg, image_file)
+                # sv.logger.info(chain)
+        if CHAIN_REPLY and count == 3:
+            await bot.send_group_forward_msg(group_id=ev['group_id'], messages=chain)
+
+async def chain_reply(ev, chain, msg, image):
+    msg = "".join(msg)
+    data ={
+            "type": "node",
+            "data": {
+                "name": str(NICKNAME[0]),
+                "uin": str(ev.self_id),
+                "content": [
+                    {"type": "text", "data": {"text": msg}},
+                    {"type": "image", "data": {"file": image}}
+                    ]
+                    }
+        }
+    chain.append(data)
+    return chain
