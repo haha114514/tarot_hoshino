@@ -1,5 +1,6 @@
 from random import shuffle, randint
 import random
+import os
 
 from aiocqhttp.message import Message
 from hoshino import util, R
@@ -163,7 +164,7 @@ meanings = {
     "切牌": "表示问卜者的主观想法"
 }
 
-path ='/root/HoshinoBot/hoshino/modules/tarot/assets/' #请修改为自己的assets path，注意windows斜杠转义
+path = os.path.join(os.path.dirname(__file__),"assets")
 # path ='C:\\Users\\Administrator\\HoshinoBot\\hoshino\\modules\\tarot\\assets\\' windows路径格式参考
 CHAIN_REPLY = True #是否启用转发模式
 
@@ -184,12 +185,12 @@ async def send_playerInfo(bot, ev):
         card_key = card_keys[index-1]
         meaning_key = list(meanings.keys())[count]
         meaning_value = meanings[meaning_key]
-        image_file = f"file:///{path}{card_key}.jpg"
+        image_file = f"file:///{os.path.join(path,card_key+'.jpg')}"
 
         # 特殊规则：愚者有两张
         if card_key == '愚者':
             rand = randint(1, 2)
-            image_file = f"file:///{path}{card_key}{rand}.jpg"
+            image_file = f"file:///{os.path.join(path,card_key+rand+'.jpg')}"
 
         # 特殊规则：小阿卡纳分正位逆位
         if isinstance(cards[card_key], dict):
