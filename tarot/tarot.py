@@ -7,8 +7,10 @@ from hoshino import util, R
 from hoshino import Service
 from hoshino.config import NICKNAME
 
-if type(NICKNAME)!=list:
-    NICKNAME=[NICKNAME]
+if type(NICKNAME) != str:
+    for NAME in NICKNAME:
+        NICKNAME = NAME
+        break
 
 cards = {
     "圣杯1": "家庭生活之幸福，别的牌可给予其更多内涵，如宾客来访、宴席、吵架",
@@ -229,7 +231,7 @@ async def chain_reply(ev, chain, msg, image):
     data ={
             "type": "node",
             "data": {
-                "name": str(NICKNAME[0]),
+                "name": str(NICKNAME),
                 "uin": str(ev.self_id),
                 "content": [
                     {"type": "text", "data": {"text": msg}},
