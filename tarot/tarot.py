@@ -193,7 +193,7 @@ async def send_playerInfo(bot, ev):
         if card_key == '愚者':
             rand = randint(1, 2)
             rand_path = os.path.join(fd, "assets", f"{card_key}{rand}.jpg")
-            image_file = f"file:///{rand_path}.jpg"
+            image_file = f"file:///{rand_path}"
 
         # 特殊规则：小阿卡纳分正位逆位
         if isinstance(cards[card_key], dict):
